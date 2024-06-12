@@ -1,31 +1,27 @@
 import express from "express";
+import conectaNaDataNase from "./config/dbConnect.js";
+import livro from "./models/livros.js";
+
+const conexao = await conectaNaDataNase();
+
+conexao.on("error", (erro) => {
+  console.error("erro de conexão", erro);
+});
+
+conexao.once("open", () => {
+  console.log("Conexão com o banco feita com sucesso");
+});
 
 const app = express();
 app.use(express.json());
-
-const livros = [
-  {
-    id: 1,
-    titulo: "Sustentabilidade é importante",
-  },
-  {
-    id: 2,
-    titulo: "Meio ambiente",
-  },
-];
-
-function buscaLivro(id) {
-  return livros.findIndex((livro) => {
-    return livro.id === Number(id);
-  });
-}
 
 app.get("/", (req, res) => {
   res.status(200).send("Sustentabilidade");
 });
 
-app.get("/livros", (req, res) => {
-  res.status(200).json(livros);
+app.get("/livros", async (req, res) => {
+  const listaLivros = await livro.find({});
+  res.status(200).json(listaLivros);
 });
 
 app.get("/livros/:id", (req, res) => {
